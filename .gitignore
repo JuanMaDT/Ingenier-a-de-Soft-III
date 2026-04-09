@@ -1,0 +1,14 @@
+# Dependencias de Node.js
+node_modules/
+package-lock.json
+
+# Base de datos local (para que cada desarrollador tenga su propia DB limpia)
+cultura.db
+
+# Logs y debugs
+*.log
+npm-debug.log*
+
+# Configuraciones de SO o IDE
+.DS_Store
+.vscode/

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Centro Cultural Lucy Tejada</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <h2 class="gradient-text" style="margin: 0; font-size: 1.5rem;">CulturaAdmin</h2>
+        </div>
+        <div class="nav-links" style="display: flex; align-items: center; gap: 1.5rem;">
+            <span id="userNameDisplay" style="color: var(--text-muted); font-size: 0.95rem;"></span>
+            <a href="#" class="active" id="navProgramas" onclick="switchTab('programas')">Programas</a>
+            <a href="#" id="navConvocatorias" onclick="switchTab('convocatorias')">Convocatorias</a>
+            <a href="#" id="navEscenarios" onclick="switchTab('escenarios')">Escenarios</a>
+            <a href="#" onclick="logout()" style="color: var(--danger); font-weight: 500; font-size: 0.95rem;">Cerrar Sesión</a>
+        </div>
+    </nav>
+
+    <div id="programasView" class="container animate-fade-in">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Gestión de Programas de Formación</h2>
+            <button class="btn btn-primary" onclick="toggleModal('programModal')">+ Nuevo Programa</button>
+        </div>
+
+        <div id="alertBox" class="alert" style="display: none;"></div>
+
+        <div class="glass-container">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Área</th>
+                            <th>Niveles</th>
+                            <th>Cupos Totales</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="programTableBody">
+                        <!-- Programs injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for New Program -->
+    <div id="programModal" class="glass-container" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+        <h3>Crear Programa</h3>
+        <form id="programForm">
+            <div class="form-group">
+                <label>Nombre del Programa</label>
+                <input type="text" id="progNombre" required>
+            </div>
+            <div class="form-group">
+                <label>Área Artística</label>
+                <select id="progArea" required>
+                    <option value="Danza">Danza</option>
+                    <option value="Teatro">Teatro</option>
+                    <option value="Música">Música</option>
+                    <option value="Artes Visuales">Artes Visuales</option>
+                </select>
+            </div>
+            <div class="grid grid-cols-2">
+                <div class="form-group">
+                    <label>Niveles</label>
+                    <input type="number" id="progNiveles" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Cupos Máximos</label>
+                    <input type="number" id="progCupos" min="1" required>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button type="button" class="btn" style="background: rgba(255,255,255,0.1); color: white;" onclick="toggleModal('programModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Vista de Convocatorias -->
+    <div id="convocatoriasView" class="container animate-fade-in" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Gestión de Convocatorias y Audiciones</h2>
+            <button class="btn btn-primary" onclick="toggleModal('convocatoriaModal')">+ Nueva Convocatoria</button>
+        </div>
+        <div id="alertBoxConv" class="alert" style="display: none;"></div>
+        <div class="glass-container">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Título</th>
+                            <th>Descripción</th>
+                            <th>Cierre</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="convocatoriaTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vista de Escenarios -->
+    <div id="escenariosView" class="container animate-fade-in" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Solicitudes de Escenarios</h2>
+        </div>
+        <div class="glass-container">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Recibo No.</th>
+                            <th>Escenario</th>
+                            <th>Solicitante</th>
+                            <th>Contacto</th>
+                            <th>Fecha Evento</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="solicitudesTableBody">
+                        <!-- Solicitudes injected by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for New Convocatoria -->
+    <div id="convocatoriaModal" class="glass-container" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+        <h3>Crear Convocatoria</h3>
+        <form id="convocatoriaForm">
+            <div class="form-group">
+                <label>Título / Nombre</label>
+                <input type="text" id="convTitulo" required>
+            </div>
+            <div class="form-group">
+                <label>Descripción Corta</label>
+                <input type="text" id="convDesc" required>
+            </div>
+            <div class="form-group">
+                <label>Fecha de Cierre</label>
+                <input type="date" id="convCierre" required>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                <button type="button" class="btn" style="background: rgba(255,255,255,0.1); color: white;" onclick="toggleModal('convocatoriaModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Crear</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal for Estudiantes Inscritos -->
+    <div id="estudiantesModal" class="glass-container" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 600px; max-height: 80vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+        <h3 id="estudiantesModalTitle">Inscritos: Programa</h3>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Asistencia</th>
+                    </tr>
+                </thead>
+                <tbody id="estudiantesTableBody">
+                    <!-- Estudiantes injected by JS -->
+                </tbody>
+            </table>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem;">
+            <button type="button" class="btn" style="background: rgba(255,255,255,0.1); color: white;" onclick="toggleModal('estudiantesModal')">Cerrar</button>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Protect route and inject user data
+        const userStr = localStorage.getItem('user');
+        if(!userStr) {
+            window.location.href = 'index.html';
+        } else {
+            const user = JSON.parse(userStr);
+            const userDisplay = document.getElementById('userNameDisplay');
+            if(userDisplay) {
+                userDisplay.innerHTML = `Hola, <strong style="color: white;">${user.nombre}</strong> <span style="opacity: 0.7">(${user.rol})</span>`;
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchProgramas();
+            if(typeof fetchConvocatorias === 'function') fetchConvocatorias();
+            if(typeof fetchSolicitudes === 'function') fetchSolicitudes();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,750 @@
+         Plataforma  Integral  de  Gestión  Cultural  
+Centro
+ 
+Cultural
+ 
+Lucy
+ 
+Tejada
+ 
+-
+ 
+Pereira
+ 
+Documento
+ 
+de
+ 
+visión
+ 
+y
+ 
+alcance
+ 
+ 
+ 
+ 
+Contenido  1.  Introducción ................................................................................................................................... 4 1.1  Propósito .................................................................................................................................. 4 1.2  Resumen .................................................................................................................................. 4 2.  Contexto  de  negocio ...................................................................................................................... 5 2.1  Antecedentes ........................................................................................................................... 5 2.2  Frase  del  problema .................................................................................................................. 5 2.3  Objetivos  de  negocio ................................................................................................................ 6 3.  Visión  de  la  solución ..................................................................................................................... 6 3.1  Frase  de  visión ......................................................................................................................... 6 3.2  Características  del  sistema ...................................................................................................... 7 3.3  Alcance .................................................................................................................................... 8 4.  Contexto  del  sistema ..................................................................................................................... 8 4.1  Resumen  de  Involucrados ....................................................................................................... 8 4.2  Suposiciones  y  dependencias .................................................................................................. 9 4.2.1  Suposiciones ................................................................................................................... 9 4.2.2  Dependencias ............................................................................................................... 10 4.3  Restricciones .......................................................................................................................... 10 4.3.1  Restricciones  de  desarrollo  y  metodologías .................................................................. 10 4.3.2  Restricciones  de  Hardware  y  software .......................................................................... 10 4.3.3  Restricciones  normativas .............................................................................................. 10 5.  Modelo  C4 ..................................................................................................................................... 11 5.1.  Diagrama  de  Contexto ........................................................................................................... 11 5.2.  Diagrama  de  Contenedor ...................................................................................................... 11 5.3.  Diagrama  de  Componentes .................................................................................................. 12 5.4.  Código ................................................................................................................................... 12 6.  Módulo  1  -  Gestión  Académica ................................................................................................... 13 6.1  Descripción  del  módulo .......................................................................................................... 13 6.2  Características  específicas  -  Módulo  1 .................................................................................. 13 6.3  Alcance  específico  del  Módulo  1 ............................................................................................ 14 6.4  Requerimientos  Funcionales  -  Módulo  1 ................................................................................ 14 7.  Módulo  2  -  Administración  de  Escenarios  Culturales .............................................................. 20 7.1  Descripción  del  Módulo .......................................................................................................... 20 7.2  Características  Específicas  -  Módulo  2 .................................................................................. 20 7.3  Alcance  específico  del  Módulo  2 ............................................................................................ 21 7.4  Requerimientos  funcionales  -  Módulo  2 ................................................................................. 21     
+8.  Requerimientos  no  funcionales .................................................................................................. 26 8.1  Requerimientos  de  Rendimiento ............................................................................................ 26 8.2  Requerimientos  de  Seguridad ................................................................................................ 27 8.3  Requerimientos  de  Fiabilidad ................................................................................................. 28 8.4  Requerimientos  de  Disponibilidad .......................................................................................... 29 8.5  Requerimientos  de  Mantenibilidad ......................................................................................... 30 8.6  Requerimientos  de  Usabilidad ............................................................................................... 31 
+ 
+1.  Introducción   
+1.1  Propósito  
+El  presente  documento  se  realiza  con  la  intención  de  presentar  de  manera  ordenada  todas  las  especificaciones  de  requerimientos,  equipo  de  desarrollo,  aspectos  clave  y  demás  detalles  pertinentes  referentes  al  proyecto  de  software  bajo  el  nombre  clave  Plataforma  Integral  de  Gestión  Cultural  del  Centro  Cultural  Lucy  Tejada  entendiendo  que  dicho  nombre  puede  cambiar  conforme  el  propio  desarrollo.  
+1.2  Resumen  
+El  presente  documento  describe  la  visión  y  alcance  del  sistema  denominado  Plataforma  Integral  de  Gestión  Cultural  del  Centro  Cultural  Lucy  Tejada  en  la  ciudad  de  Pereira.  En  él,  se  establece  el  acuerdo  inicial  sobre  el  desarrollo  del  sistema  que  permitirá  modernizar,  automatizar  e  integrar  los  procesos  académicos,  administrativos  y  operativos  en  dos  módulos  clave:  
+Módulo  1  -  Gestión  Académica  de  la  Escuela  de  Formación  Cultural:  Abarca  la  gestión  de  estudiantes,  educadores,  programas  formativos,  inscripciones,  seguimiento  académico,  control  de  asistencia  y  gestión  de  presentaciones.  
+Módulo  2  -  Administración  de  Escenarios  Culturales:  Comprende  el  alquiler  de  espacios  culturales,  la  gestión  contractual,  el  mantenimiento  preventivo  y  correctivo  de  escenarios,  y  la  generación  de  reportes  de  ingresos  y  disponibilidad.  
+Cada  módulo  cuenta  con  sus  propias  características  y  necesidades  intrínsecas,  a  partir  de  los  cuales  se  propone  sus  propios  requerimientos  funcionales,  sin  embargo,  al  actuar  como  parte  de  un  solo  sistema,  es  importante  entender  que  los  requerimientos  no  funcionales  que  se  presentan  deben  ser  cumplidos  o  abarcados  por  ambos  módulos,  sea  requerimientos  funcionales  o  no  funcionales,  la  prioridad  está  dada  en  una  escala  de  Esencial,  Deseada  y  Opcional  
+ 
+ 
+2.  Contexto  de  negocio   2.1  Antecedentes   El  Centro  Cultural  Lucy  Tejada,  ubicado  en  Pereira,  es  un  espacio  fundamental  para  la  promoción,  formación  y  difusión  del  arte  y  la  cultura  en  la  región.  Se  ha  consolidado  como  un  referente  institucional  que  impulsa  procesos  formativos  en  áreas  como  música,  danza,  teatro  y  artes  visuales,  brindando  oportunidades  de  desarrollo  artístico  a  niños,  jóvenes  y  adultos.  Además  de  su  función  académica,  el  centro  cumple  un  papel  estratégico  en  la  dinamización  cultural  de  la  ciudad,  al  albergar  eventos,  presentaciones  artísticas,  encuentros  comunitarios  y  actividades  institucionales  en  sus  distintos  escenarios  culturales.  Su  impacto  trasciende  el  ámbito  educativo,  convirtiéndose  en  un  punto  de  integración  social  y  fortalecimiento  del  tejido  cultural  de  la  ciudad.  
+1.  No  cuenta  con  una  plataforma  propia  de  gestión  académica;  depende  del  portal  de  la  Alcaldía  de  Pereira  para  las  inscripciones.   2.  Los  procesos  de  alquiler  de  escenarios  se  gestionan  manualmente  a  través  de  correo  electrónico,  agenda  física  y  formatos  en  papel.   3.  Las  solicitudes  de  mantenimiento  de  infraestructura  se  reciben  por  múltiples  canales  no  integrados  (SAIA,  teléfono,  correo).   4.  No  existe  trazabilidad  digital  centralizada  de  ningún  proceso.   5.  La  generación  de  reportes  y  estadísticas  es  manual  y  dispersa,  dificultando  la  toma  de  decisiones  estratégicas.   6.  El  control  de  asistencia  de  estudiantes  y  el  seguimiento  de  novedades  académicas  se  realiza  en  formatos  físicos.  
+Generando:   1.  Retrasos  administrativos.   2.  Riesgo  de  errores  humanos.   3.  Falta  de  métricas  estratégicas.   4.  Dificultad  en  la  toma  de  decisiones.  
+2.2  Frase  del  problema   
+“El  Centro  Cultural  Lucy  Tejada  no  cuenta  con  una  plataforma  digital  integral  que  centralice  la  gestión  académica,  la  administración  de  escenarios  y  el  mantenimiento  de  infraestructura,  lo  que  genera  procesos  fragmentados,  baja  trazabilidad  y  limitaciones  en  la  toma  de  decisiones  estratégicas.”  
+2.3  Objetivos  de  negocio  
+  
+3.  Visión  de  la  solución   3.1  Frase  de  visión   
+ Misión:   
+Desarrollar  una  plataforma  web  integral  que  permita  al  Centro  Cultural  Lucy  Tejada  gestionar  de  
+manera
+ 
+eficiente
+ 
+sus
+ 
+procesos
+ 
+académicos,
+ 
+administrativos
+ 
+y
+ 
+operativos,
+ 
+fortaleciendo
+ 
+la
+ 
+transparencia,
+ 
+trazabilidad
+ 
+y
+ 
+calidad
+ 
+del
+ 
+servicio
+ 
+cultural.
+ 
+La
+ 
+solución
+ 
+estará
+ 
+orientada
+ 
+a
+ 
+centralizar
+ 
+la
+ 
+información
+ 
+en
+ 
+un
+ 
+único
+ 
+sistema
+ 
+digital,
+ 
+optimizar
+ 
+la
+ 
+toma
+ 
+de
+ 
+decisiones
+ 
+mediante
+ 
+el
+ 
+uso
+ 
+de
+ 
+datos
+ 
+en
+ 
+tiempo
+ 
+real
+ 
+y
+ 
+automatizar
+ 
+tareas
+ 
+clave
+ 
+como
+ 
+matrículas,
+ 
+control
+ 
+de
+ 
+asistencia,
+ 
+alquiler
+ 
+de
+ 
+escenarios,
+ 
+mantenimiento
+ 
+y
+ 
+generación
+ 
+de
+ 
+reportes.
+ 
+ 
+De  esta  manera,  se  busca  modernizar  la  gestión  institucional,  reducir  errores  operativos  y  de  
+personal,
+ 
+ofreciendo
+ 
+una
+ 
+experiencia
+ 
+más
+ 
+ágil
+ 
+y
+ 
+confiable
+ 
+para
+ 
+estudiantes,
+ 
+educadores,
+ 
+personal
+ 
+administrativo
+ 
+y
+ 
+comunidad
+ 
+en
+ 
+general.
+ 
+ 
+Visión:   
+Convertir  al  Centro  Cultural  Lucy  Tejada  en  un  referente  regional  en  transformación  digital  
+cultural,
+ 
+mediante
+ 
+una
+ 
+plataforma
+ 
+moderna,
+ 
+segura,
+ 
+escalable
+ 
+y
+ 
+accesible
+ 
+que
+ 
+integre
+ 
+la
+ 
+gestión
+ 
+académica,
+ 
+la
+ 
+administración
+ 
+de
+ 
+escenarios
+ 
+y
+ 
+el
+ 
+mantenimiento
+ 
+de
+ 
+infraestructura
+ 
+cultural.
+ 
+ID  Descripción  del  objetivo  de  negocio  
+ON-1   Implementar  un  sistema  web  integral  para  la  gestión  cultural  del  Centro  Lucy  Tejada  
+ON-2   
+Digitalizar  el  proceso  de  matrícula  y  seguimiento  académico  de  la  Escuela  de  Formación  
+ON-3   
+Automatizar  el  proceso  de  alquiler  de  escenarios  culturales  con  gestión  contractual  integrada  
+ON-4   
+Implementar  un  sistema  de  gestión  de  mantenimiento  con  trazabilidad  de  solicitudes  y  evidencias  
+ON-5   Generar  dashboards  estratégicos  para  mejorar  la  toma  de  decisiones  institucionales  
+ON-6  
+Garantizar  cumplimiento  normativo  en  protección  de  datos  y  seguridad  de  la  información   
+3.2  Características  del  sistema  
+ID  Descripción  Prioridad  
+Objetivo  del  negocio  asociado  
+CAR-01  
+Autenticación,  gestión  y  permisos  de  usuario  por  módulo  
+Esencial  ON-1,  ON-6  
+CAR-02  
+Gestión  de  inscripciones  y  matrículas  de  la  Escuela  de  Formación  
+Esencial  
+ 
+ON-2  
+CAR-03  
+Control  de  asistencia  y  seguimiento  académico  de  estudiantes  
+Esencial  
+ 
+ON-2  
+ 
+CAR-04  Gestión  de  convocatorias  artísticas  y  culturales  
+Deseada  
+ 
+ON-2  
+ 
+CAR-05  Registro  y  gestión  de  solicitudes  de  los  escenarios  
+Esencial  
+ 
+ON-3  
+ 
+CAR-06  
+Gestión  contractual  digital  del  proceso  de  arrendamiento  
+Esencial  
+ 
+ON-3  
+ 
+CAR-07  
+Control  de  inventarios  de  equipos,  instrumentos  y  vestuario  
+Deseada  
+ON-4  
+ 
+CAR-08  Dashboards  y  reportes  estratégicos  por  módulo  
+Deseada  
+ 
+ON-5  
+CAR-9  
+Notificaciones  automáticas  a  usuarios  por  correo  electrónico  
+Deseada  
+ 
+ON-5  
+ 
+CAR-10  Encuestas  de  satisfacción  digitales  y  tabulación   Opcional  
+ON-5  
+  
+ 
+3.3  Alcance   
+ Número  de   release  
+Tema  principal   ID  de  Características  a  incluir  
+1.0   
+Funcionalidad  base  -  autenticación,  gestión  académica  y  solicitudes  de  alquiler  
+CAR-01,  CAR-02,  CAR-03,  CAR-05  
+2.0   
+Gestión  contractual,  mantenimiento  y  control  de  inventarios   
+CAR-06,  CAR-07,  CAR-08  
+3.0   
+Inteligencia  de  negocio,  notificaciones  y  funcionalidades  complementarias   
+CAR-04,  CAR-09,  CAR-10,  CAR-11  
+   
+4.  Contexto  del  sistema   
+4.1  Resumen  de  Involucrados   
+ Nombre  Cristhian  Alzate  Gómez  
+Información  de  contacto   cristhian.alzate@utp.edu.co
+Categoría  profesional  Ingeniero  
+Responsabilidades  
+Aprobar  visión    Proporcionar  acceso  a  instalaciones  y  a  procedimientos  existentes    Aprobar  entregas  del  proyecto    
+ Nombre  Óscar  Andrés  García  Jurado  
+Información  de  contacto   Oscar Andres Garcia Jurado
+Categoría  profesional  Ingeniero  
+Responsabilidades  
+Proporcionar  y  validar  requerimientos   Validar  prototipos    Mostrar  la  manera  en  que  se  realizan  las  tareas  que  serán  automatizadas    Nombre  Juan  Manuel  Diaz  Torres   
+Información  de  contacto   j.diaz3@utp.edu.co
+Categoría  profesional  Ingeniero  
+Responsabilidades  
+Desarrollo  de  los  módulos  del  sistema.   
+Implementación  de  funcionalidades  priorizadas.   
+Participación  activa  en  las  ceremonias  Scrum.  
+  
+4.2  Suposiciones  y  dependencias  
+4.2.1  Suposiciones   Disponibilidad  del  hardware  y  software  necesario:  Se  asume  que  el  servidor  principal  cumple  con  los  requerimientos  mínimos  establecidos,  si  el  hardware  o  el  sistema  operativo  no  estuvieran  disponibles,  el  diseño  del  sistema  y  las  herramientas  seleccionadas  podrían  requerir  ajustes.   Conectividad  de  los  usuarios  finales:  Se  asume  que  los  usuarios  finales  tendrán  acceso  a  dispositivos  con  el  navegador  mencionado  y  conexiones  a  internet  de  al  menos  5  Mbps.  Si  este  nivel  de  conectividad  no  se  cumple,  la  experiencia  del  usuario  podría  verse  afectada,  requiriendo  ajustes  en  el  diseño  o  funcionalidades  del  sistema.   Recursos  humanos  disponibles:  Se  considera  que  los  roles  clave  del  proyecto  estarán  disponibles  durante  todo  el  ciclo  de  desarrollo.  Cambios  en  la  disponibilidad  de  los  integrantes  del  equipo  podrían  impactar  en  los  plazos  y  la  calidad  del  desarrollo.  
+ 
+4.2.2  Dependencias  Actualizaciones  de  navegadores:  La  experiencia  de  usuario  depende  de  que  los  navegadores  modernos  continúen  soportando  las  tecnologías  empleadas,  como  HTML5,  JS  y  CSS3.  Cambios  en  los  navegadores  podrían  requerir  ajustes  técnicos.   Políticas  regulatorias:  El  cumplimiento  normativo  del  sistema  depende  de  la  estabilidad  de  las  leyes  colombianas.  Cambios  en  estas  leyes  podrían  generar  la  necesidad  de  modificar  los  requerimientos  del  sistema.    
+4.3  Restricciones  
+4.3.1  Restricciones  de  desarrollo  y  metodologías  El  proyecto  debe  desarrollarse  utilizando  la  metodología  ágil  Scrum,  con  iteraciones  que  abarquen  máximo   3  semanas,  teniendo  reuniones  de  revisión  de  avances  cada  al  finalizar  cada  semana  y  entregables  funcionales  al  final  de  cada  iteración.   El  equipo  de  desarrollo  debe  trabajar  bajo  un  cronograma  definido,  priorizando  entregables  claves  que  se  definirán  en  la  primera  reunión  de  cada  iteración.   
+4.3.2  Restricciones  de  Hardware  y  software  El  sistema  está  diseñado  tanto  para  entornos  web:  Chrome,  Firefox,  Edge  y  Safari,  además  es  compatible  con  los  sistemas  operativos:  Windows,  macOS,  Linux,  iOS  y  Android.  Es  importante  mencionar  que  se  desarrolla  el  sistema  para  tres  de  las  resoluciones  de  pantalla  más  comunes  en  el  mercado.   
+4.3.3  Restricciones  normativas  Se  contemplan  los  siguientes  lineamientos  formativos  
+●  La  Ley  1581  de  2012  y  el  Decreto  1377  de  2013  Para  la  protección  de  datos  personales  en  Colombia.  ●  La  Ley  1273  de  2009  Sobre  delitos  informáticos.  ●  La  Ley  General  de  Cultura  397  de  1997  y  sus  decretos  reglamentarios.  ●  La  Ley  1493  de  2011  Sobre  espectáculo  público  de  las  artes  escénicas.  ●  El  Marco  Normativo  para  Entidades  de  Gobierno  en  materia  de  contratación  y  convenios  
+5.  Modelo  C4  
+5.1.  Diagrama  de  Contexto  
+ 
+5.2.  Diagrama  de  Contenedor  
+ 
+
+5.3.  Diagrama  de  Componentes  
+ 
+5.4.  Código  
+ 
+ 
+
+6.  Módulo  1  -  Gestión  Académica   
+6.1  Descripción  del  módulo  
+El  modelo  de  Gestión  académica  comprende  la  digitalización  y  automatización  de  todo  los  procesos  relacionados  con  la  escuela  de  formación  artística  y  cultural  del  Centro  Cultural  Lucy  Tejada,  tanto  en  su  sede  principal  como  en  sus  subsedes  descentralizadas.  Abarca  desde  la  difusión  y  convocatoria  de  programas,  pasando  por  el  proceso  de  inscripción,  audición,  matrícula  y  formación,  hasta  la  clausura  y  generación  de  reportes  de  cada  ciclo  académico.   
+6.2  Características  específicas  -  Módulo  1   
+ID  Descripción   Prioridad  Objetivo  
+M1-CAR-01  
+Gestión  de  convocatoria  y  difusión  digital  de  programas  de  formación  
+Esencial  ON-1,  ON-2  
+M1-CAR-02  
+Inscripción  en  línea  con  validación  automática  de  requerimientos  
+Esencial  ON-2  
+M1-CAR-03  
+Gestión  de  audiciones  y  publicación  de  resultados  de  admitidos  
+Esencial  ON-2  
+M1-CAR-04  
+Conformación  y  gestión  de  grupos  por  programa,  nivel  y  horario  
+Esencial  ON-2  
+M1-CAR-05  Control  de  asistencia  digital  de  estudiantes   Esencial  ON-2  
+M1-CAR-06  
+Seguimiento  de  novedades  académicas:  Deserción,  cambio  de  grupo,  promoción  
+Esencial  ON-2  
+M1-CAR-07  
+Autorizaciones  digitales  para  padres  de  familia  para  salidas  o  eventos  
+Deseada  ON-2  
+M1-CAR-08  
+Control  de  inventario  de  instrumentos,  vestuario  e  implementos  por  programa  
+Deseada  ON-4  
+M1-CAR-09  
+Encuestas  digitales  de  satisfacción  y  tabulación  automática  semestral  
+Deseada  ON-5  
+M1-CAR-10  
+Reportes  y  dashboards  de  indicadores  académicos  por  programa  
+Deseada  ON-5  
+6.3  Alcance  específico  del  Módulo  1  
+Se  incluye  dentro  de  este  módulo:  
+1.  Gestión  de  programas  de  formación:  danza,  teatro,  artes  visuales  y  música.  2.  Administración  de  sedes  y  subsedes  descentralizadas  de  la  Escuela  de  Formación.  3.  Flujo  completo  de  inscripción,  audición,  matrícula  y  formación  de  estudiantes.  4.  Control  de  asistencia  y  registro  de  novedades  académicas.  5.  Gestión  de  presentaciones  y  clausuras  de  ciclos  académicos.  6.  Control  de  préstamo  de  instrumentos  y  elementos  de  los  programas  de  formación.  
+Se  excluye  de  este  módulo:  
+1.  El  proceso  de  contratación  de  formadores  con  la  Alcaldía  (gestión  presupuestal  externa).  2.  La  gestión  financiera  de  pagos  o  costos  de  formación  3.  La  administración  de  escenarios  y  alquiler  de  espacios.  Este  será  cubierto  por  el  Módulo  2.  
+6.4  Requerimientos  Funcionales  -  Módulo  1   
+ ID  M1-RF-01  
+Nombre  Gestión  de  Programas  de  Formación  
+Prioridad  Esencial  
+Actores  Jefe  Oficina  de  Promoción  Cultural,  Coordinadores  de  Programas  
+Descripción  
+El  sistema  debe  permitir  crear,  editar,  activar  y  desactivar  programas  de  formación  artística  y  cultural,  especificando  nombre,  área,  niveles,  cupos  máximos,  horarios  disponibles  y  requerimientos  de  inscripción.  Debe  soportar  la  asignación  de  coordinadores  y  formadores  a  cada  programa.  
+  
+ 
+ID  M1-RF-02  
+Nombre  Inscripcion  en  Linea  de  Aspirantes  
+Prioridad  Esencial  
+Actores  Aspirantes,  Padres  de  Familia,  Auxiliar  Administrativo  
+Descripción  
+El  sistema  debe  ofrecer  un  formulario  de  inscripción  en  línea  para  los  aspirantes  a  los  programas  de  formación,  permitiendo  el  registro  de  datos  personales,  el  programa  de  interés  y  la  documentación  requerida.  Debe  generar  un  número  de  radicado  de  inscripción  y  notificar  al  aspirante  vía  correo  electrónico  con  los  detalles  de  la  siguiente  etapa  del  proceso.  
+  
+ID  M1-RF-03  
+Nombre  Gestión  de  Audiciones  
+Prioridad  Esencial  
+Actores  Coordinadores  de  Programas,  Auxiliar  Administrativo  
+Descripción  
+El  sistema  debe  permitir  programar  fechas  de  audición  por  programa,  registrar  la  evaluación  de  cada  aspirante  y  publicar  automáticamente  el  listado  de  admitidos  en  la  plataforma.  Debe  generar  actas  de  evaluación  descargables  en  PDF.  
+  
+ 
+ID  M1-RF-04  
+Nombre  Matrícula  y  Conformación  de  Grupos  
+Prioridad  Esencial  
+Actores  Coordinadores  de  Programas,  Auxiliar  Administrativo  
+Descripción  
+El  sistema  debe  permitir  formalizar  la  matrícula  de  los  estudiantes  admitidos,  asignarlos  a  grupos  según  edad,  nivel  y  disponibilidad,  y  gestionar  el  formato  digital  de  Compromiso  de  Matrícula.  Debe  mostrar  la  ocupación  de  cada  grupo  y  los  salones  asignados.  
+  
+ID  M1-RF-05  
+Nombre  Control  de  Asistencia  
+Prioridad  Esencial  
+Actores  Formadores,  Coordinadores  de  Programas  
+Descripción  
+El  sistema  debe  permitir  a  los  formadores  registrar  la  asistencia  de  sus  estudiantes  de  forma  digital  en  cada  sesión.  Debe  generar  alertas  automáticas  cuando  un  estudiante  supere  el  porcentaje  de  ausencias  establecido  en  el  manual  de  convivencia.  
+  
+ 
+ID  M1-RF-06  
+Nombre  Seguimiento  de  Novedades  Académicas  
+Prioridad  Esencial  
+Actores  Coordinadores  de  Programas,  Auxiliar  Administrativo  
+Descripción  
+El  sistema  debe  permitir  registrar  y  gestionar  novedades  académicas  como  deserción,  cambio  de  grupo  y  promoción  de  nivel.  Debe  llevar  un  histórico  de  novedades  por  estudiante  y  generar  reportes  de  causales  de  deserción  por  programa  y  periodo.  
+  
+ID  M1-RF-07  
+Nombre  Autorizaciones  Digitales  para  Padres  
+Prioridad  Deseada  
+Actores  Padres  de  Familia,  Coordinadores  de  Programas  
+Descripción  
+El  sistema  debe  permitir  enviar  solicitudes  de  autorización  digital  a  los  padres  o  acudientes  de  estudiantes  menores  de  edad  para  participación  en  eventos,  salidas  y  presentaciones  institucionales.  Los  padres  podrán  firmar  digitalmente  a  través  del  sistema.  
+  
+ 
+ID  M1-RF-08  
+Nombre  Control  de  Inventario  por  Programa  
+Prioridad  Deseada  
+Actores  Auxiliar  Administrativo,  Coordinadores  de  Programas  
+Descripción  
+El  sistema  debe  permitir  registrar  y  controlar  mensualmente  el  inventario  de  instrumentos,  vestuario,  implementos  y  accesorios  por  programa  de  formación.  Debe  gestionar  los  préstamos  de  elementos  para  presentaciones,  registrando  responsable,  fecha  de  salida  y  devolución.  
+  
+ID  M1-RF-09  
+Nombre  Encuestas  de  Satisfacción  
+Prioridad  Deseada  
+Actores  Gestor  Social,  Estudiantes,  Padres  de  Familia  
+Descripción  
+El  sistema  debe  permitir  crear  y  distribuir  encuestas  digitales  de  satisfacción  a  estudiantes  y  padres  de  familia  cada  seis  meses.  Debe  tabular  automáticamente  los  resultados  y  generar  un  informe  de  diagnóstico  con  indicadores  de  mejora  por  programa.  
+  
+ 
+ID  M1-RF-10  
+Nombre  Reportes  y  Dashboards  Académicos  
+Prioridad  Deseada  
+Actores  Jefe  Oficina  Promoción  Cultural,  Secretaría  de  Cultura  
+Descripción  
+El  sistema  debe  generar  un  dashboard  con  indicadores  clave  como:  total  de  estudiantes  activos  por  programa,  tasa  de  deserción,  porcentaje  de  asistencia  promedio  y  novedades  del  periodo.  Los  reportes  deben  ser  exportables  en  formato  PDF,  CSV  y  Excel.  
+ 
+ 
+7.  Módulo  2  -  Administración  de  Escenarios  Culturales  
+7.1  Descripción  del  Módulo  
+El  Módulo  de  Administración  de  Escenarios  Culturales  comprende  la  digitalización  de  los  procesos  de  alquiler  de  espacios  culturales  del  Centro  Cultural  Lucy  Tejada  así  como  la  gestión  del  mantenimiento  preventivo  y  correctivo  de  la  infraestructura.  Este  módulo  busca  centralizar  todas  las  solicitudes,  contratos,  pagos,  programados  y  evidencias  en  un  único  sistema,  eliminando  los  procesos  manuales  y  en  papel  actualmente  utilizados.  
+7.2  Características  Específicas  -  Módulo  2  
+ ID  Descripción  Prioridad  Objetivo  
+M2-CAR-01  
+Gestión  de  disponibilidad  y  agenda  de  escenarios  en  tiempo  real  
+Esencial  ON-1,  ON-3  
+M2-CAR-02  Registro  y  gestión  digital  de  solicitudes  de  alquiler  Esencial  ON-3  
+M2-CAR-03  
+Gestión  de  documentos  y  contratos  digitales  de  arrendamiento  
+Esencial  ON-3  
+M2-CAR-04  Control  de  pagos,  recibos  y  facturación  del  alquiler  Esencial  ON-3  
+M2-CAR-05  
+Gestión  de  solicitudes  de  mantenimiento  con  trazabilidad  
+Esencial  ON-4  
+M2-CAR-06  
+Asignación  y  seguimiento  de  ordenes  de  mantenimiento  
+Esencial  ON-4  
+M2-CAR-07  Registro  y  evidencias  digitales  de  mantenimientos  Deseada  ON-4  
+M2-CAR-08  
+Encuestas  de  satisfacción  post-evento  y  reportes  de  uso  
+Deseada  ON-5  
+M2-CAR-09  
+Reportes  y  dashboards  de  ingresos,  ocupación  y  mantenimientos  
+Deseada  ON-5  
+7.3  Alcance  específico  del  Módulo  2   
+Se  incluye  dentro  de  este  módulo:  
+1.  Gestión  de  la  agenda  y  disponibilidad  del  Teatro  Municipal  Santiago  Londoño  y  del  Centro  Cultural  Lucy  Tejada.  2.  Flujo  completo  del  proceso  de  alquiler:  solicitud,  revisión,  documentación,  contrato,  pago  y  entrega  del  espacio.  3.  Gestión  de  solicitudes  de  mantenimiento  preventivo  y  correctivo  de  escenarios  y  bienes  culturales.  4.  Control  de  asistentes,  control  de  ingresos  y  reportes  de  eventos  por  escenario.  5.  Encuestas  de  satisfacción  del  cliente  post-evento.  
+ Se  excluye  de  este  módulo:  
+1.  La  gestión  contable  y  presupuestal  avanzada  (cubierta  por  el  área  de  Presupuesto  de  la  Secretaría  de  Cultura).  2.  La  tramitación  de  permisos  externos  ante  la  Secretaría  de  Gobierno  (proceso  externo  a  la  plataforma).  3.  La  gestión  de  la  Emisora  Cultural  (proceso  independiente  no  incluido  en  este  proyecto).  
+7.4  Requerimientos  funcionales  -  Módulo  2   
+ ID  M2-RF-01  
+Nombre  Gestión  de  Disponibilidad  de  Escenarios  
+Prioridad  Esencial  
+Actores  Auxiliar  Administrativo,  Jefe  Oficina  Administración  de  Escenarios  
+Descripción  
+El  sistema  debe  mostrar  un  calendario  interactivo  con  la  disponibilidad  en  tiempo  real  de  cada  escenario  (auditorio,  sala,  teatro).  Debe  permitir  bloquear  fechas  por  mantenimiento  o  reserva  interna  y  mostrar  el  estado  de  cada  espacio  (disponible,  reservado,  en  mantenimiento).  
+  
+ 
+ID  M2-RF-02  
+Nombre  Registro  de  Solicitudes  de  Alquiler  
+Prioridad  Esencial  
+Actores  Auxiliar  Administrativo,  Clientes  externos  
+Descripción  
+El  sistema  debe  permitir  registrar  solicitudes  de  alquiler  de  forma  digital  (verbal  transcrita,  escrita  o  por  formulario  web),  asignando  un  número  de  radicado  automático.  Debe  notificar  al  solicitante  con  los  requerimientos  exigidos  y  el  valor  a  consignar  según  el  Acuerdo  de  Tarifas  vigente.  
+ 
+ID  M2-RF-03  
+Nombre  Gestión  de  Documentos  y  Contratos  
+Prioridad  Esencial  
+Actores  Auxiliar  Administrativo,  Oficina  Jurídica,  Secretaria  de  Cultura  
+Descripción  
+El  sistema  debe  permitir  gestionar  digitalmente  todos  los  documentos  del  proceso  de  arrendamiento:  recepción  de  documentos  del  arrendatario,  elaboración  de  estudio  previo,  generación  del  contrato,  revisión  jurídica  y  firma  digital.  Debe  llevar  el  historial  de  versiones  y  estados  de  cada  contrato.  
+  
+ 
+ID  M2-RF-04  
+Nombre  Control  de  Pagos  y  Facturación  
+Prioridad  Esencial  
+Actores  Auxiliar  Administrativo  
+Descripción  
+El  sistema  debe  generar  el  recibo  de  pago  para  el  arrendatario,  registrar  el  comprobante  bancario  y  emitir  la  factura  correspondiente.  Debe  llevar  un  control  de  cartera  y  generar  reportes  de  ingresos  por  escenario,  período  y  tipo  de  evento.  
+ 
+ID  M2-RF-05  
+Nombre  Acta  de  Entrega  y  Recepción  del  Espacio  
+Prioridad  Esencial  
+Actores  Operarios  Calificados,  Auxiliar  Administrativo  
+Descripción  
+El  sistema  debe  generar  y  gestionar  el  Acta  de  Entrega  y  Recibo  de  Espacios  tanto  al  inicio  como  al  cierre  de  cada  evento.  Debe  permitir  registrar  el  estado  físico  del  inmueble  con  fotos  y  observaciones,  y  ligar  el  acta  al  contrato  correspondiente.  
+  
+ 
+ID  M2-RF-06  
+Nombre  Registro  de  Solicitudes  de  Mantenimiento  
+Prioridad  Esencial  
+Actores  Auxiliar  Administrativo,  Jefe  Oficina,  Dependencias  internas  
+Descripción  
+El  sistema  debe  permitir  registrar  solicitudes  de  mantenimiento  preventivo  y  correctivo  provenientes  de  las  diferentes  oficinas  de  la  Secretaría  de  Cultura  vía  web,  centralizando  los  canales  actuales  (SAIA,  correo  y  teléfono)  en  un  único  punto  de  registro  con  número  de  ticket  de  seguimiento.  
+ 
+ID  M2-RF-07  
+Nombre  Asignación  y  Seguimiento  de  Ordenes  de  Trabajo  
+Prioridad  Esencial  
+Actores  Jefe  Oficina,  Técnico  Operativo  de  Mantenimiento  
+Descripción  
+El  sistema  debe  permitir  al  Jefe  de  Oficina  clasificar  y  asignar  cada  solicitud  al  personal  interno  de  mantenimiento  o  escalarla  a  otras  dependencias  de  la  Alcaldía.  Debe  registrar  el  estado  de  cada  orden  (pendiente,  en  proceso,  completada)  y  el  tiempo  de  resolución.  
+ 
+ 
+ID  M2-RF-08  
+Nombre  Registro  de  Evidencias  de  Mantenimiento  
+Prioridad  Deseada  
+Actores  Tecnico  Operativo  de  Mantenimiento  
+Descripción  
+El  sistema  debe  permitir  cargar  fotografías  y  observaciones  como  evidencia  de  cada  actividad  de  mantenimiento  ejecutada.  Debe  generar  un  historial  de  mantenimientos  por  activo  (ascensores,  plantas  eléctricas,  silleteria,  luminarias,  etc.)  del  Centro  Cultural  Lucy  Tejada  y  el  Teatro  Municipal  Santiago  Londoño.  
+ 
+ID  M2-RF-09  
+Nombre  Control  de  Asistentes  e  Ingresos  por  Evento  
+Prioridad  Esencial  
+Actores  Auxiliar  Administrativo  
+Descripción  
+El  sistema  debe  permitir  registrar  el  aforo  y  los  ingresos  por  cada  evento  realizado  en  los  escenarios.  Debe  generar  reportes  de  ocupación  por  escenario  y  periodo,  y  consolidar  estadísticas  de  uso  para  la  toma  de  decisiones  estratégicas.  
+ 
+ 
+ID  M2-RF-10  
+Nombre  Encuesta  de  Satisfacción  del  Cliente  Post-Evento  
+Prioridad  Deseada  
+Actores  Auxiliar  Administrativo,  Clientes  externos  
+Descripción  
+El  sistema  debe  generar  automáticamente  una  encuesta  de  satisfacción  al  arrendatario  al  concluir  el  evento.  Los  resultados  deben  evaluarse  y  generar  un  reporte  trimestral  de  satisfacción  del  servicio  de  alquiler  de  escenarios.  
+ 8.  Requerimientos  no  funcionales  
+8.1  Requerimientos  de  Rendimiento  
+ 
+ 
+ 
+ID  RNF-01  
+Nombre   Concurrencia  de  usuarios  
+Prioridad  Esencial  
+Descripción  
+El  sistema,  en  los  escenarios  correspondientes,  debe  ser  capaz  de  soportar  hasta  500  usuarios  conectados  al  mismo  tiempo,  sin  que  se  note  una  demora  significativa  en  el  tiempo  de  respuesta  
+ID  RNF-02  
+Nombre   Optimización  en  la  tiempos  de  respuesta  
+Prioridad  Esencial  
+Descripción  
+Los  tiempos  de  respuesta  para  las  operaciones  críticas:  inicio  de  sesión,  consultas  y  generación  de  reportes  deben  ser  inferiores  a  4  segundos.  
+ID  RNF-03  
+Nombre   Optimización  del  servidor  
+Prioridad  Esencial  
+Descripción  Optimizar  el  uso  de  los  recursos  del  servidor  para  evitar  una  sobrecarga  
+ 
+ 
+8.2  Requerimientos  de  Seguridad   
+ 
+ 
+ID  RNF-04  
+Nombre   Optimización  de  las  autenticaciones  
+Prioridad  Esencial  
+Descripción  
+En  todos  los  casos  las  operaciones  de  autenticación,  como  el  inicio  de  sesión,  no  debe  tardar  más  de  un  minuto.  
+ID  RNF-05  
+Nombre  Optimización  de  las  interfaces  
+Prioridad  Esencial  
+Descripción  
+Las  interfaces  no  deben  superar  el  tiempo  de  carga  de  30  segundos,  para  asegurar  una  buen  UX  
+ID  RNF-06  
+Nombre  Encriptación  y  certificación  
+Prioridad  Esencial  
+Descripción  
+Implementación  de  autenticación  segura  para  datos  confidenciales  como  contraseñas  mediante  algoritmos  de  hash  seguro  como  bcrypt,  pbkdf2  o  Argon2.  El  hosting  debe  contar  con  certificados  SSL/TLS  válidos  para  cifrar  el  tráfico.  
+ID  RNF-07  
+Nombre  Autoguardado  
+Prioridad  Esencial  
+Descripción  
+Implementar  mecanismos  automáticos  de  guardado  y  respaldo  para  evitar  pérdida  o  corrupción  de  datos  
+ID  RNF-08  
+Nombre  Mecanismos  de  respuesta  ante  fallos  
+Prioridad  Esencial  
+Descripción  
+Mecanismos  de  respuesta  ante  incidentes  de  seguridad,  incluyendo  notificaciones  al  usuario  y  autoridades,  de  ser  necesario  
+ 
+ 
+ 
+8.3  Requerimientos  de  Fiabilidad  
+ 
+ 
+ID  RNF-09  
+Nombre  Definición  de  roles  
+Prioridad  Esencial  
+Descripción  
+Definir  roles  y  permisos  para  limitar  el  acceso  a  funcionalidades  y  datos  según  el  tipo  de  usuario,  limitando  también  la  exposición  de  servicios,  puertos  y  funcionalidades  innecesarias  
+ID  RNF-10  
+Nombre  Limitación  y  control  de  acceso  
+Prioridad  Esencial  
+Descripción  
+Implementar  mecanismos  para  limitar  el  número  de  intentos  fallidos  de  inicios  de  sesión.  La  plataforma  deberá  guardar  registros  detallados  de  inicios  de  sesión,  tanto  exitosos  como  fallidos,  incluyendo  el  usuario,  la  fecha  y  la  hora  de  cada  evento.  Registrar  la  fecha  y  hora  de  creación  o  modificación  de  información,  junto  con  el  usuario  responsable  de  dichos  cambios.  
+ID  RNF-11  
+Nombre  Desarrollo  seguro  
+Prioridad  Esencial  
+Descripción  Implementar  métodos  de  SSDLC  
+ID  RNF-12  
+Nombre  Continuidad  del  uso  
+Prioridad  Esencial  
+Descripción  
+El  sistema,  especialmente  en  las  versiones  web,  debe  funcionar  de  manera  continua  durante  al  menos  500  horas  sin  interrupciones  en  condiciones  normales  de  uso.  
+ID  RNF-13  
+Nombre  Optimización  de  las  interfaces  
+Prioridad  Esencial  
+Descripción  
+En  caso  de  un  fallo,  el  sistema  debe  recuperarse  completamente  en  un  tiempo  máximo  de  10  minutos,  restaurando  todas  las  operaciones  y  servicios.  
+8.4  Requerimientos  de  Disponibilidad
+ 
+  
+  
+ 
+ 
+ 
+ID  RNF-14  
+Nombre  Mantenimiento  
+Prioridad  Esencial  
+Descripción  
+Se  realizará  un  mantenimiento  de  todo  el  ecosistema  al  menos  una  vez  cada  seis  meses,  durante  el  receso  universitario  estándar  colombiano.  El  tiempo  de  inactividad  por  mantenimiento  no  puede  exceder  las  2  horas.  Las  actividades  de  mantenimientos  deben  ser  previamente  notificados  a  los  usuarios  con  un  mínimo  de  48  horas  de  antelación.  
+ID  RNF-15  
+Nombre  Alertas  de  emergencia  
+Prioridad  Esencial  
+Descripción  
+En  caso  de  interrupciones  no  planificadas,  el  sistema  debe  notificar  automáticamente  al  equipo  en  menos  de  1  minuto  y  reanudar  operaciones  críticas  en  un  máximo  de  10  minutos.  
+ID  RNF-16  
+Nombre  Optimización  de  las  interfaces  
+Prioridad  Esencial  
+Descripción  
+El  sistema  debe  mantener  un  tiempo  de  actividad  del  99.9%  mensual,  permitiendo  un  tiempo  de  inactividad  máximo  de  40  minutos  al  mes  para  fallas  técnicas.  
+ID  RNF-17  
+Nombre  Modularidad  
+Prioridad  Esencial  
+Descripción  
+El  sistema  debe  estar  construido  a  partir  de  módulos  desacoplados  entre  sí,  permitiendo  tolerancia  a  fallos  
+ 
+8.5  Requerimientos  de  Mantenibilidad  
+ 
+ 
+  
+ 
+ID  RNF-18  
+Nombre  Staging  
+Prioridad  Esencial  
+Descripción  
+Se  deberá  contar  con  un  entorno  de  pre-producción  que  permita  realizar  pruebas  y  validaciones  antes  de  aplicar  cambios  en  el  sistema  en  producción.    
+ID  RNF-19  
+Nombre  Registro  del  mantenimiento  
+Prioridad  Esencial  
+Descripción  
+Realizar  mantenimiento  regular  al  sistema,  este  debe  ser  registrado  a  través  de  un  control  de  versiones.  
+ID  RNF-20  
+Nombre  Registro  del  mantenimiento  
+Prioridad  Esencial  
+Descripción  
+Realizar  mantenimiento  regular  al  sistema,  este  debe  ser  registrado  a  través  de  un  control  de  versiones.  
+ID  RNF-21  
+Nombre  Documentación  y  control  de  versiones  
+Prioridad  Esencial  
+Descripción  
+El  código  fuente  deberá  estar  bien  documentado,  estructurado  y  alineado  con  buenas  prácticas  de  desarrollo.  Se  deberán  utilizar  nombres  de  variables  y  funciones  claros,  comentarios  significativos  y  control  de  versiones  Se  implementará  el  uso  de  tests  automatizados  para  asegurar  la  estabilidad  del  sistema  ante  futuras  actualizaciones.  
+8.6  Requerimientos  de  Usabilidad  
+ 
+ 
+  
+ 
+ 
+ID  RNF-22  
+Nombre  UX/UI  
+Prioridad  Esencial  
+Descripción  La  plataforma  debe  tener  una  interfaz  intuitiva  y  fácil  de  usar   
+ID  RNF-23  
+Nombre  Diseño  responsive  
+Prioridad  Esencial  
+Descripción  
+Debe  cumplir  con  estándares  de  diseño  responsivo,  asegurando  que  funcione  correctamente  en  dispositivos  móviles,  tablets  y  computadoras.  
+ID  RNF-24  
+Nombre  Manuales  de  usuario  y  soporte  a  la  comunidad  
+Prioridad  Esencial  
+Descripción  
+Proporcionar  manuales  de  usuario  y  sesiones  de  capacitación  para  garantizar  que  todos  los  usuarios  puedan  utilizar  la  plataforma  de  manera  efectiva.  Ofrecer  un  soporte  técnico  continuo  para  resolver  incidencias  y  responder  a  consultas  de  los  usuarios.  
+ID  RNF-25  
+Nombre  Accesibilidad  
+Prioridad  Esencial  
+Descripción  
+La  plataforma  deberá  cumplir  con  los  estándares  de  accesibilidad  web  WCAG  2.1  (Web  Content  Accessibility  Guidelines)  para  asegurar  que  todas  las  personas,  incluidas  aquellas  con  discapacidades  visuales,  auditivas,  motoras  o  cognitivas,  puedan  utilizarla  sin  barreras.  

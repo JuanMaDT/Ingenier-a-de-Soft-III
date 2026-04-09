@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscripciones - Centro Cultural Lucy Tejada</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .enroll-wrapper {
+            max-width: 600px;
+            margin: 2rem auto;
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="enroll-wrapper">
+        <div class="header">
+            <h1 class="gradient-text">Portal de Inscripciones</h1>
+            <p>Escuela de Formación Artística y Cultural</p>
+        </div>
+
+        <div id="alertBox" class="alert" style="display: none;"></div>
+
+        <div class="glass-container animate-fade-in" id="formContainer">
+            <form id="inscripcionForm">
+                <div class="form-group">
+                    <label>Nombre Completo del Aspirante</label>
+                    <input type="text" id="insNombre" required>
+                </div>
+                <div class="grid grid-cols-2">
+                    <div class="form-group">
+                        <label>Correo Electrónico</label>
+                        <input type="email" id="insEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono de Contacto</label>
+                        <input type="text" id="insTelefono" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Programa de Interés</label>
+                    <select id="insPrograma" required>
+                        <option value="">Cargando programas disponibles...</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; font-size: 1.1rem;">
+                    Formalizar Inscripción
+                </button>
+            </form>
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">Volver al Inicio</a>
+            </div>
+        </div>
+
+        <div class="glass-container animate-fade-in" id="successContainer" style="display: none; text-align: center;">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+            <h2 class="gradient-text">¡Inscripción Exitosa!</h2>
+            <p>Tu número de radicado es: <strong id="radicadoNum" style="color: var(--primary); font-size: 1.2rem;"></strong></p>
+            <p style="margin-top: 1rem; color: var(--text-muted);">Te enviaremos un correo con la fecha de tu audición próximamente.</p>
+            <button class="btn btn-primary" style="margin-top: 2rem;" onclick="location.reload()">Inscribir otra persona</button>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', loadProgramasForSelect);
+    </script>
+</body>
+</html>

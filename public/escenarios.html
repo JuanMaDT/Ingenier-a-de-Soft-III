@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Escenarios - Lucy Tejada</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="split-layout">
+        <!-- Panel Izquierdo: Información -->
+        <div class="split-info">
+            <h1>Escenarios Culturales</h1>
+            <p>
+                El Centro Cultural Lucy Tejada pone a disposición de la ciudadanía sus instalaciones para eventos, ensayos y reuniones culturales.
+            </p>
+            <div class="features-list">
+                <div class="feature-item">
+                    <div class="feature-icon">🎭</div>
+                    <div>
+                        <h3>Espacios Adaptables</h3>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Contamos con teatro principal, salas de danza y auditorios múltiples.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📅</div>
+                    <div>
+                        <h3>Reservas Simplificadas</h3>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">Elige tu fecha y espera la confirmación de la administración.</p>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top: 2rem;">
+                 <a href="index.html" style="color: var(--primary); text-decoration: none;">&larr; Volver al Inicio</a>
+                 <span style="color: white; margin: 0 10px;">|</span>
+                 <a href="inscripcion.html" style="color: var(--secondary); text-decoration: none;">Ver Oferta de Programas</a>
+            </div>
+        </div>
+
+        <!-- Panel Derecho: Formulario -->
+        <div class="split-form">
+            <div id="formContainer" class="glass-container" style="max-width: 450px; margin: 0 auto;">
+                <h2>Solicitar Reserva</h2>
+                <div id="alertBox" class="alert" style="display: none;"></div>
+                <form id="reservaForm">
+                    <div class="form-group">
+                        <label>Escenario de interés</label>
+                        <select id="resEscenario" required>
+                            <option value="">Cargando escenarios...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nombre del Solicitante o Agrupación</label>
+                        <input type="text" id="resNombre" placeholder="Ej. Grupo X " required>
+                    </div>
+                    <div class="form-group">
+                        <label>Correo Electrónico de Contacto</label>
+                        <input type="email" id="resEmail" placeholder="correo@ejemplo.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha Solicitada</label>
+                        <input type="date" id="resFecha" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Enviar Solicitud</button>
+                </form>
+            </div>
+
+            <!-- Panel de Éxito -->
+            <div id="successContainer" class="glass-container" style="max-width: 450px; margin: 0 auto; text-align: center; display: none;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">✅</div>
+                <h2>¡Solicitud Recibida!</h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                    Hemos registrado tu solicitud de reserva en nuestro sistema. La administración validará la disponibilidad y se comunicará contigo.
+                </p>
+                <div class="form-group">
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 1.2rem; color: var(--primary);">
+                        <strong id="radicadoNum">RES-XXXX</strong>
+                    </div>
+                    <small style="color: var(--text-muted);">Guarda este número para seguimiento</small>
+                </div>
+                <button class="btn btn-primary" onclick="location.reload()" style="margin-top: 1rem;">Hacer otra solicitud</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script de Lógica Específica para Escenarios -->
+    <script>
+        // Cargar Catálogo al abrir
+        document.addEventListener('DOMContentLoaded', async () => {
+            const select = document.getElementById('resEscenario');
+            try {
+                const res = await fetch('/api/escenarios');
+                const data = await res.json();
+                
+                select.innerHTML = '<option value="">Selecciona un escenario...</option>';
+                data.escenarios.forEach(esc => {
+                    const option = document.createElement('option');
+                    option.value = esc.id;
+                    option.textContent = `${esc.nombre} (Capacidad: ${esc.capacidad} | $${esc.precio_base})`;
+                    select.appendChild(option);
+                });
+            } catch (err) {
+                select.innerHTML = '<option value="">Error al cargar catálogo</option>';
+            }
+        });
+
+        const rForm = document.getElementById('reservaForm');
+        rForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                escenario_id: document.getElementById('resEscenario').value,
+                solicitante_nombre: document.getElementById('resNombre').value,
+                solicitante_email: document.getElementById('resEmail').value,
+                fecha_solicitada: document.getElementById('resFecha').value
+            };
+
+            try {
+                const res = await fetch('/api/solicitudes_escenarios', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                
+                if (res.ok) {
+                    document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('successContainer').style.display = 'block';
+                    document.getElementById('radicadoNum').textContent = "RES-2026-" + data.id.toString().padStart(4, '0');
+                } else {
+                    const alertBox = document.getElementById('alertBox');
+                    alertBox.textContent = data.error;
+                    alertBox.style.display = 'block';
+                    alertBox.className = 'alert alert-error';
+                }
+            } catch (err) {
+                const alertBox = document.getElementById('alertBox');
+                alertBox.textContent = 'Error de conexión';
+                alertBox.style.display = 'block';
+                alertBox.className = 'alert alert-error';
+            }
+        });
+    </script>
+</body>
+</html>
