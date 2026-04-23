@@ -69,11 +69,11 @@
             <div class="grid grid-cols-2">
                 <div class="form-group">
                     <label>Niveles</label>
-                    <input type="number" id="progNiveles" min="1" required>
+                    <input type="text" id="progNiveles" pattern="([1-9]|10)" maxlength="2" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Debe ser un número del 1 al 10" required>
                 </div>
                 <div class="form-group">
                     <label>Cupos Máximos</label>
-                    <input type="number" id="progCupos" min="1" required>
+                    <input type="text" id="progCupos" pattern="([1-9]|50)" maxlength="2" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Debe ser un número del 1 al 10" required>
                 </div>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
