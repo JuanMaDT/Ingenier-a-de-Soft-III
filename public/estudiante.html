@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Estudiante - Lucy Tejada</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .nav-links a { color: var(--text-muted); cursor: pointer; text-decoration: none; padding-bottom: 5px; }
+        .nav-links a.active { color: white; border-bottom: 2px solid var(--primary); font-weight: bold; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <h2 class="gradient-text" style="margin: 0; font-size: 1.5rem;">CulturaCiudadana</h2>
+        </div>
+        <div class="nav-links" style="display: flex; align-items: center; gap: 1.5rem;">
+            <span id="userNameDisplay" style="color: white; font-weight: 500;"></span>
+            <a id="navCursos" class="active" onclick="switchTabEstudiante('cursos')">Mis Cursos</a>
+            <a id="navCatalogo" onclick="switchTabEstudiante('catalogo')">Inscribir Programa</a>
+            <a id="navReservas" onclick="switchTabEstudiante('reservas')">Mis Reservas</a>
+            <a href="#" onclick="logout()" style="color: var(--danger); font-weight: 500; font-size: 0.95rem;">Salir</a>
+        </div>
+    </nav>
+
+    <!-- Vista: Mis Cursos -->
+    <div id="cursosView" class="container animate-fade-in" style="display: block; max-width: 900px;">
+        <div style="text-align: center; margin-bottom: 3rem; margin-top: 2rem;">
+            <h1 class="gradient-text" style="font-size: 2.5rem; margin-bottom: 0;">Tu Formación Cultural</h1>
+            <p style="color: var(--text-muted); margin-top: 10px;">Consulta los programas académicos en los que actívamente estás matriculado.</p>
+        </div>
+        <div id="cursosGrid" class="grid grid-cols-2" style="gap: 2rem;"></div>
+        <div id="noDataMsgCursos" style="display: none; text-align: center; margin-top: 3rem;">
+            <h3 style="color: var(--text-muted);">Aún no tienes suscripciones activas</h3>
+            <button class="btn btn-primary" onclick="switchTabEstudiante('catalogo')" style="margin-top: 1rem;">Ver Catálogo de Programas</button>
+        </div>
+    </div>
+
+    <!-- Vista: Catálogo (Inscribir) -->
+    <div id="catalogoView" class="container animate-fade-in" style="display: none; max-width: 900px;">
+        <div style="text-align: center; margin-bottom: 3rem; margin-top: 2rem;">
+            <h1 class="gradient-text" style="font-size: 2.5rem; margin-bottom: 0;">Catálogo de Oferta Institucional</h1>
+            <p style="color: var(--text-muted); margin-top: 10px;">Únete con 1 solo clic a los talleres aperturados por nuestros docentes.</p>
+        </div>
+        <div id="catalogoGrid" class="grid grid-cols-2" style="gap: 2rem;"></div>
+    </div>
+
+    <!-- Vista: Mis Reservas -->
+    <div id="reservasView" class="container animate-fade-in" style="display: none; max-width: 900px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; margin-top: 2rem;">
+            <div>
+                <h1 class="gradient-text" style="font-size: 2.5rem; margin-bottom: 0;">Mis Radicados de Escenarios</h1>
+                <p style="color: var(--text-muted); margin-top: 10px;">Vigila el estado de tus solicitudes hechas para ensayos y obras culturales.</p>
+            </div>
+            <button class="btn btn-primary" onclick="abrirModalReserva()">+ Nuevo Radicado</button>
+        </div>
+        <div id="reservasGrid" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+        <div id="noDataMsgReservas" style="display: none; text-align: center; margin-top: 3rem;">
+            <h3 style="color: var(--text-muted);">No has solicitado ningún escenario.</h3>
+        </div>
+    </div>
+
+    <!-- Modal para Nueva Reserva -->
+    <div id="reservaModal" class="glass-container" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+        <h3 style="margin-bottom:1.5rem;">Solicitar Alquiler de Escenario</h3>
+        <form id="reservaForm">
+            <div class="form-group">
+                <label>Escenario de Interés</label>
+                <select id="resEscenario" required>
+                    <option value="">Cargando escenarios...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Fecha Requerida de Uso</label>
+                <input type="date" id="resFecha" required>
+            </div>
+            <div class="form-group">
+                <label>Teléfono Celular de Contacto</label>
+                <input type="text" id="resTelefono" required placeholder="Ej: 3001234567">
+            </div>
+            <!-- Botones -->
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;">Radicar</button>
+                <button type="button" class="btn" style="flex: 1; background: rgba(255,255,255,0.1); color:white;" onclick="cerrarModalReserva()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userStr = localStorage.getItem('user');
+            if(!userStr) return window.location.href = 'index.html';
+            
+            currentUser = JSON.parse(userStr);
+            if(currentUser.rol !== 'estudiante') return window.location.href = 'index.html';
+
+            document.getElementById('userNameDisplay').innerHTML = `¡Hola, ${currentUser.nombre}!`;
+            switchTabEstudiante('cursos');
+        });
+
+        function switchTabEstudiante(tab) {
+            ['cursos', 'catalogo', 'reservas'].forEach(t => {
+                document.getElementById(`nav${t.charAt(0).toUpperCase() + t.slice(1)}`).classList.remove('active');
+                document.getElementById(`${t}View`).style.display = 'none';
+            });
+
+            document.getElementById(`nav${tab.charAt(0).toUpperCase() + tab.slice(1)}`).classList.add('active');
+            document.getElementById(`${tab}View`).style.display = 'block';
+
+            if(tab === 'cursos') fetchMisCursos();
+            if(tab === 'catalogo') fetchCatalogo();
+            if(tab === 'reservas') fetchMisReservas();
+        }
+
+        function showAlertExt(msg) {
+            alert(msg); // Usamos alert nativo por ser rápido en esta vista aislada
+        }
+
+        async function fetchMisCursos() {
+            try {
+                const res = await fetch(`/api/estudiante/mis-cursos/${encodeURIComponent(currentUser.email)}`);
+                const data = await res.json();
+                const grid = document.getElementById('cursosGrid');
+                grid.innerHTML = '';
+                
+                if(!data.cursos || data.cursos.length === 0) {
+                    document.getElementById('noDataMsgCursos').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('noDataMsgCursos').style.display = 'none';
+                }
+
+                data.cursos.forEach(curso => {
+                    const card = document.createElement('div');
+                    card.className = 'glass-container';
+                    card.innerHTML = `
+                        <span class="badge" style="background: rgba(255,255,255,0.1)">${curso.area}</span>
+                        <h3 style="margin-top: 10px; font-size: 1.3rem;">${curso.programa}</h3>
+                        <div style="margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Matriculado: <strong style="color:white;">${new Date(curso.fecha_inscripcion).toLocaleDateString()}</strong></p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Estado: <strong style="color: #10b981;">Cursando</strong></p>
+                        </div>`;
+                    grid.appendChild(card);
+                });
+            } catch (err) {}
+        }
+
+        async function fetchCatalogo() {
+            try {
+                const res = await fetch('/api/programas');
+                const data = await res.json();
+                const grid = document.getElementById('catalogoGrid');
+                grid.innerHTML = '';
+
+                data.programas.forEach(prog => {
+                    const card = document.createElement('div');
+                    card.className = 'glass-container';
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <h3 style="font-size: 1.2rem; margin-bottom: 5px;">${prog.nombre}</h3>
+                                <p style="color: var(--text-muted); font-size:0.9rem; margin:0;">${prog.area} | Nivel: ${prog.niveles}</p>
+                            </div>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">Activo</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="inscribirme(${prog.id}, '${prog.nombre}')" style="width: 100%; margin-top: 1.5rem;">Unirme a la Clase</button>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (err) {}
+        }
+
+        async function inscribirme(programa_id, programa_nombre) {
+            const tel = prompt('Confirmación de Identidad requerida.\nIngresa un número de celular de contacto para ratificar tu inscripción al curso de ' + programa_nombre + ':');
+            if(!tel) return;
+
+            try {
+                const payload = {
+                    estudiante_nombre: currentUser.nombre,
+                    estudiante_email: currentUser.email,
+                    estudiante_telefono: tel,
+                    programa_id: programa_id
+                };
+                
+                const res = await fetch('/api/inscripciones', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if(res.ok) {
+                    showAlertExt('¡Inscripción Exitosa! Te has unido a: ' + programa_nombre);
+                    switchTabEstudiante('cursos'); // Redirigir a sus cursos para verlo instantáneamente
+                } else {
+                    showAlertExt('Tuvimos un problema procesando la inscripción.');
+                }
+            } catch(e) {
+                showAlertExt('Fallo de red.');
+            }
+        }
+
+        async function fetchMisReservas() {
+            try {
+                const res = await fetch(`/api/estudiante/mis-solicitudes/${encodeURIComponent(currentUser.email)}`);
+                const data = await res.json();
+                const grid = document.getElementById('reservasGrid');
+                grid.innerHTML = '';
+                
+                if(!data.solicitudes || data.solicitudes.length === 0) {
+                    document.getElementById('noDataMsgReservas').style.display = 'block';
+                    return;
+                } else {
+                    document.getElementById('noDataMsgReservas').style.display = 'none';
+                }
+
+                data.solicitudes.forEach(sol => {
+                    const box = document.createElement('div');
+                    box.className = 'glass-container';
+                    box.style.display = 'flex';
+                    box.style.justifyContent = 'space-between';
+                    box.style.alignItems = 'center';
+                    
+                    let bgBadge = 'rgba(234, 179, 8, 0.2)'; let textC = '#eab308';
+                    if(sol.estado_solicitud === 'Aprobada' || sol.estado_solicitud === 'Contrato Generado') { 
+                        bgBadge = 'rgba(34, 197, 94, 0.2)'; textC = '#22c55e'; 
+                    } else if (sol.estado_solicitud === 'Rechazada') {
+                        bgBadge = 'rgba(239, 68, 68, 0.2)'; textC = '#ef4444';
+                    }
+
+                    box.innerHTML = `
+                        <div>
+                            <p style="margin: 0; color: var(--text-muted); font-size: 0.8rem;">Radicado #RES-2026-${sol.id.toString().padStart(4, '0')}</p>
+                            <h3 style="margin: 5px 0;">${sol.escenario_nombre}</h3>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Fecha requerida: ${sol.fecha_solicitada}</p>
+                        </div>
+                        <div>
+                            <span class="badge" style="background:${bgBadge}; color:${textC}; padding: 0.5rem 1rem; font-size:1rem;">${sol.estado_solicitud}</span>
+                        </div>
+                    `;
+                    grid.appendChild(box);
+                });
+            } catch (err) {}
+        }
+
+        // --- LÓGICA DEL FORMULARIO INTEGRADO DE ESCENARIOS ---
+        
+        async function abrirModalReserva() {
+            document.getElementById('reservaModal').style.display = 'block';
+            
+            // Cargar select de escenarios dinámicamente si está vacío
+            const sel = document.getElementById('resEscenario');
+            if(sel.options.length <= 1) {
+                try {
+                    const res = await fetch('/api/escenarios');
+                    const dat = await res.json();
+                    sel.innerHTML = '<option value="">Seleccione un escenario...</option>';
+                    dat.escenarios.forEach(esc => {
+                        sel.innerHTML += `<option value="${esc.id}">${esc.nombre} - Cap: ${esc.capacidad_personas}</option>`;
+                    });
+                } catch(e) {}
+            }
+        }
+
+        function cerrarModalReserva() {
+            document.getElementById('reservaModal').style.display = 'none';
+        }
+
+        const resForm = document.getElementById('reservaForm');
+        if(resForm) {
+            resForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    escenario_id: document.getElementById('resEscenario').value,
+                    solicitante_nombre: currentUser.nombre,
+                    solicitante_email: currentUser.email,
+                    solicitante_telefono: document.getElementById('resTelefono').value,
+                    fecha_solicitada: document.getElementById('resFecha').value
+                };
+
+                try {
+                    const res = await fetch('/api/solicitudes_escenarios', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if(res.ok) {
+                        showAlertExt('¡Petición radicada con éxito! La administración la evaluará pronto.');
+                        cerrarModalReserva();
+                        resForm.reset();
+                        fetchMisReservas();
+                    } else {
+                        showAlertExt('Surgió un error radicando el formato.');
+                    }
+                } catch(err) {
+                    showAlertExt('Error de conexión.');
+                }
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

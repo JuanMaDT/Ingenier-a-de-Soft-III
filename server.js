@@ -107,6 +107,25 @@ function initDB() {
             }
         });
 
+        // Tabla de Inventarios
+        db.run(`CREATE TABLE IF NOT EXISTS inventarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            articulo TEXT NOT NULL,
+            categoria TEXT NOT NULL,
+            cantidad INTEGER NOT NULL,
+            estado TEXT DEFAULT 'Bueno',
+            fecha_registro DATE DEFAULT CURRENT_DATE
+        )`);
+
+        // Tabla de Contratos de Arrendamiento
+        db.run(`CREATE TABLE IF NOT EXISTS contratos_arrendamiento (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            solicitud_id INTEGER NOT NULL,
+            precio_final REAL NOT NULL,
+            fecha_generacion DATE DEFAULT CURRENT_DATE,
+            FOREIGN KEY(solicitud_id) REFERENCES solicitudes_escenarios(id)
+        )`);
+
         // Crear usuario admin por defecto si no existe
         const adminEmail = 'admin@cultura.gov';
         db.get('SELECT id FROM usuarios WHERE email = ?', [adminEmail], async (err, row) => {
@@ -135,7 +154,7 @@ app.post('/api/auth/login', (req, res) => {
         if (!validPass) return res.status(401).json({ error: 'Credenciales inválidas' });
 
         // En una app real usaríamos JWT, aquí se hace sencillo
-        res.json({ success: true, message: 'Autenticación exitosa', user: { id: user.id, nombre: user.nombre, rol: user.rol } });
+        res.json({ success: true, message: 'Autenticación exitosa', user: { id: user.id, nombre: user.nombre, email: user.email, rol: user.rol } });
     });
 });
 
@@ -166,15 +185,32 @@ app.delete('/api/programas/:id', (req, res) => {
     });
 });
 
-// Crear una inscripción en línea
-app.post('/api/inscripciones', (req, res) => {
+// Crear una inscripción en línea y auto-registrar el usuario para la Fase Extra
+app.post('/api/inscripciones', async (req, res) => {
     const { estudiante_nombre, estudiante_email, estudiante_telefono, programa_id } = req.body;
-    db.run(`INSERT INTO inscripciones (estudiante_nombre, estudiante_email, estudiante_telefono, programa_id) VALUES (?, ?, ?, ?)`,
-        [estudiante_nombre, estudiante_email, estudiante_telefono, programa_id],
-        function(err) {
-            if (err) return res.status(500).json({ error: err.message });
-            res.json({ transcacion_id: this.lastID, mensaje: 'Inscripción generada exitosamente' });
+    
+    // Inyectar el estudiante a la tabla usuarios (si no existe) para que pueda hacer login posterior
+    try {
+        db.get('SELECT id FROM usuarios WHERE email = ?', [estudiante_email], async (err, row) => {
+            if (!row) {
+                // Generamos contraseña igual a su teléfono para fines educativos de Software III
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(estudiante_telefono, salt);
+                db.run('INSERT INTO usuarios (nombre, email, password, rol) VALUES (?, ?, ?, ?)', 
+                    [estudiante_nombre, estudiante_email, hashedPassword, 'estudiante']);
+            }
+            
+            // Proseguir con la inscripción nativa en el curso
+            db.run(`INSERT INTO inscripciones (estudiante_nombre, estudiante_email, estudiante_telefono, programa_id) VALUES (?, ?, ?, ?)`,
+                [estudiante_nombre, estudiante_email, estudiante_telefono, programa_id],
+                function(err2) {
+                    if (err2) return res.status(500).json({ error: err2.message });
+                    res.json({ transcacion_id: this.lastID, mensaje: 'Inscripción generada exitosamente' });
+                });
         });
+    } catch (e) {
+        return res.status(500).json({ error: 'Error del servidor' });
+    }
 });
 
 // Obtener incripciones por programa (Opcional para admin)
@@ -189,9 +225,33 @@ app.get('/api/inscripciones', (req, res) => {
 // Obtener inscripciones de un programa específico
 app.get('/api/programas/:id/inscripciones', (req, res) => {
     db.all(`SELECT id, estudiante_nombre, estudiante_email, estudiante_telefono, fecha_inscripcion 
-            FROM inscripciones WHERE programa_id = ?`, [req.params.id], (err, rows) => {
+            FROM inscripciones WHERE programa_id = ? ORDER BY id DESC`, [req.params.id], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ inscripciones: rows });
+    });
+});
+
+// Obtener los cursos matriculados de un *ESTUDIANTE* específico por email
+app.get('/api/estudiante/mis-cursos/:email', (req, res) => {
+    db.all(`SELECT i.id, i.fecha_inscripcion, p.nombre as programa, p.area 
+            FROM inscripciones i 
+            JOIN programas p ON i.programa_id = p.id 
+            WHERE i.estudiante_email = ?
+            ORDER BY i.id DESC`, [req.params.email], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ cursos: rows });
+    });
+});
+
+// Obtener las solicitudes de espacios de un *ESTUDIANTE* específico por email
+app.get('/api/estudiante/mis-solicitudes/:email', (req, res) => {
+    db.all(`SELECT s.*, e.nombre as escenario_nombre 
+            FROM solicitudes_escenarios s
+            JOIN escenarios e ON s.escenario_id = e.id
+            WHERE s.solicitante_email = ?
+            ORDER BY s.id DESC`, [req.params.email], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ solicitudes: rows });
     });
 });
 
@@ -241,11 +301,30 @@ app.delete('/api/convocatorias/:id', (req, res) => {
 // ESCENARIOS Y SOLICITUDES (FASE 4)
 // ==========================================
 
-// Obtener catálogo de escenarios
+// Obtener catálogo de escenarios completos (incluyendo inactivos si lo requiere el admin)
 app.get('/api/escenarios', (req, res) => {
-    db.all('SELECT * FROM escenarios WHERE estado = "Activo"', [], (err, rows) => {
+    db.all('SELECT * FROM escenarios', [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ escenarios: rows });
+    });
+});
+
+// Crear un nuevo escenario (Admin)
+app.post('/api/escenarios', (req, res) => {
+    const { nombre, capacidad, ubicacion, precio_base } = req.body;
+    db.run(`INSERT INTO escenarios (nombre, capacidad, ubicacion, precio_base, estado) VALUES (?, ?, ?, ?, ?)`,
+        [nombre, capacidad, ubicacion || 'Sede Principal', precio_base, 'Activo'],
+        function(err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ id: this.lastID, mensaje: 'Escenario registrado exitosamente' });
+        });
+});
+
+// Dar de baja o eliminar escenario
+app.delete('/api/escenarios/:id', (req, res) => {
+    db.run(`DELETE FROM escenarios WHERE id = ?`, req.params.id, function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ deletedInfo: this.changes });
     });
 });
 
@@ -278,6 +357,94 @@ app.put('/api/solicitudes_escenarios/:id/estado', (req, res) => {
         [estado, req.params.id], function(err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ updated: this.changes, mensaje: 'Estado modificado a ' + estado });
+    });
+});
+
+// ==========================================
+// INVENTARIOS Y CONTRATOS (FASE 5)
+// ==========================================
+
+// Obtener inventarios
+app.get('/api/inventarios', (req, res) => {
+    db.all('SELECT * FROM inventarios ORDER BY id DESC', [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ inventarios: rows });
+    });
+});
+
+// Crear ítem en inventario
+app.post('/api/inventarios', (req, res) => {
+    const { articulo, categoria, cantidad, estado } = req.body;
+    db.run(`INSERT INTO inventarios (articulo, categoria, cantidad, estado) VALUES (?, ?, ?, ?)`,
+        [articulo, categoria, cantidad, estado],
+        function(err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ id: this.lastID, mensaje: 'Ítem agregado al inventario' });
+        });
+});
+
+// Eliminar ítem de inventario
+app.delete('/api/inventarios/:id', (req, res) => {
+    db.run(`DELETE FROM inventarios WHERE id = ?`, req.params.id, function(err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ deletedInfo: this.changes });
+    });
+});
+
+// Obtener contratos
+app.get('/api/contratos', (req, res) => {
+    db.all(`SELECT c.*, s.solicitante_nombre, s.fecha_solicitada, e.nombre as escenario_nombre 
+            FROM contratos_arrendamiento c
+            JOIN solicitudes_escenarios s ON c.solicitud_id = s.id
+            JOIN escenarios e ON s.escenario_id = e.id
+            ORDER BY c.id DESC`, [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ contratos: rows });
+    });
+});
+
+// Generar contrato para una solicitud aprobada
+app.post('/api/contratos', (req, res) => {
+    const { solicitud_id, precio_final } = req.body;
+    db.run(`INSERT INTO contratos_arrendamiento (solicitud_id, precio_final) VALUES (?, ?)`,
+        [solicitud_id, precio_final],
+        function(err) {
+            if (err) return res.status(500).json({ error: err.message });
+            res.json({ id: this.lastID, mensaje: 'Contrato emitido exitosamente' });
+        });
+});
+
+// ==========================================
+// ESTADÍSTICAS Y RESUMEN (FASE 6)
+// ==========================================
+
+app.get('/api/estadisticas', (req, res) => {
+    db.serialize(() => {
+        let stats = {
+            ingresosTotales: 0,
+            estudiantesInscritos: 0,
+            convocatoriasActivas: 0,
+            inventarioDanado: 0,
+            solicitudesPendientes: 0
+        };
+
+        db.get('SELECT SUM(precio_final) as total FROM contratos_arrendamiento', [], (err, row) => {
+            if(row) stats.ingresosTotales = row.total || 0;
+        });
+        db.get('SELECT COUNT(*) as total FROM inscripciones', [], (err, row) => {
+            if(row) stats.estudiantesInscritos = row.total || 0;
+        });
+        db.get('SELECT COUNT(*) as total FROM convocatorias WHERE estado = "Activa"', [], (err, row) => {
+            if(row) stats.convocatoriasActivas = row.total || 0;
+        });
+        db.get('SELECT COUNT(*) as total FROM inventarios WHERE estado IN ("Regular", "Malo")', [], (err, row) => {
+            if(row) stats.inventarioDanado = row.total || 0;
+        });
+        db.get('SELECT COUNT(*) as total FROM solicitudes_escenarios WHERE estado_solicitud = "Pendiente"', [], (err, row) => {
+            if(row) stats.solicitudesPendientes = row.total || 0;
+            // Send at the final nested query to ensure all run
+            res.json(stats);
+        });
     });
 });
 

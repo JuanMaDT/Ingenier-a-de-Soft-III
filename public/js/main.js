@@ -36,7 +36,13 @@ if (loginForm) {
             
             if (res.ok) {
                 localStorage.setItem('user', JSON.stringify(data.user));
-                window.location.href = 'dashboard.html';
+                if (data.user.rol === 'admin') {
+                    window.location.href = 'dashboard.html';
+                } else if (data.user.rol === 'estudiante') {
+                    window.location.href = 'estudiante.html';
+                } else {
+                    window.location.href = 'index.html'; // Default fallback
+                }
             } else {
                 showAlert(data.error || 'Credenciales inválidas');
             }
@@ -220,15 +226,18 @@ if (insForm) {
 // ==========================================
 
 function switchTab(tab) {
-    document.getElementById('navProgramas').classList.remove('active');
-    document.getElementById('navConvocatorias').classList.remove('active');
-    document.getElementById('navEscenarios').classList.remove('active');
-    
-    document.getElementById('programasView').style.display = 'none';
-    document.getElementById('convocatoriasView').style.display = 'none';
-    document.getElementById('escenariosView').style.display = 'none';
+    ['Resumen', 'Programas', 'Convocatorias', 'Escenarios', 'Inventario', 'Contratos'].forEach(t => {
+        const el = document.getElementById(`nav${t}`);
+        if(el) el.classList.remove('active');
+        const view = document.getElementById(`${t.toLowerCase()}View`);
+        if(view) view.style.display = 'none';
+    });
 
-    if(tab === 'programas') {
+    if(tab === 'resumen') {
+        document.getElementById('navResumen').classList.add('active');
+        document.getElementById('resumenView').style.display = 'block';
+        if(typeof fetchEstadisticas === 'function') fetchEstadisticas();
+    } else if(tab === 'programas') {
         document.getElementById('navProgramas').classList.add('active');
         document.getElementById('programasView').style.display = 'block';
     } else if (tab === 'convocatorias') {
@@ -239,6 +248,15 @@ function switchTab(tab) {
         document.getElementById('navEscenarios').classList.add('active');
         document.getElementById('escenariosView').style.display = 'block';
         if(typeof fetchSolicitudes === 'function') fetchSolicitudes();
+        if(typeof fetchEscAdmin === 'function') fetchEscAdmin(); // FASE EXTRA PARTE 4
+    } else if (tab === 'inventario') {
+        document.getElementById('navInventario').classList.add('active');
+        document.getElementById('inventarioView').style.display = 'block';
+        if(typeof fetchInventario === 'function') fetchInventario();
+    } else if (tab === 'contratos') {
+        document.getElementById('navContratos').classList.add('active');
+        document.getElementById('contratosView').style.display = 'block';
+        if(typeof fetchContratos === 'function') fetchContratos();
     }
 }
 
@@ -326,8 +344,79 @@ async function eliminarConvocatoria(id) {
 }
 
 // ==========================================
-// SOLICITUDES DE ESCENARIOS (FASE 4)
+// SOLICITUDES Y CRUD DE ESCENARIOS (FASE 4)
 // ==========================================
+
+async function fetchEscAdmin() {
+    try {
+        const res = await fetch('/api/escenarios');
+        const data = await res.json();
+        const tbody = document.getElementById('escAdminTableBody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+        if (data.escenarios.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-muted)">Catálogo vacío.</td></tr>';
+            return;
+        }
+
+        data.escenarios.forEach(esc => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${esc.nombre}</strong></td>
+                <td>${esc.capacidad} expect.</td>
+                <td><span class="badge" style="background:rgba(255,255,255,0.1)">${esc.ubicacion}</span></td>
+                <td>$${parseFloat(esc.precio_base).toLocaleString()} COP</td>
+                <td>
+                    <button class="btn btn-sm" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;" onclick="eliminarEscenario(${esc.id})">Desactivar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+async function eliminarEscenario(id) {
+    if(!confirm('¿Eliminar este escenario del catálogo operativo?')) return;
+    try {
+        await fetch(`/api/escenarios/${id}`, { method: 'DELETE' });
+        fetchEscAdmin(); // Recargar cuadrícula Admin
+    } catch(e) {
+        showAlert('Error tratando de eliminar.');
+    }
+}
+
+const escAdminForm = document.getElementById('escenarioAdminForm');
+if(escAdminForm) {
+    escAdminForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            nombre: document.getElementById('escAdmNombre').value,
+            capacidad: document.getElementById('escAdmCapacidad').value,
+            precio_base: document.getElementById('escAdmPrecio').value,
+            ubicacion: document.getElementById('escAdmUbicacion').value
+        };
+
+        try {
+            const res = await fetch('/api/escenarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                toggleModal('escenarioAdminModal');
+                escAdminForm.reset();
+                fetchEscAdmin();
+            } else {
+                showAlert('Error anexando infraestructura.');
+            }
+        } catch (err) {
+            showAlert('Falló la solicitud.');
+        }
+    });
+}
 
 async function fetchSolicitudes() {
     try {
@@ -355,8 +444,10 @@ async function fetchSolicitudes() {
                     <button class="btn" style="background:#22c55e; color:white; padding:0.25rem 0.6rem; font-size:0.8rem; border:none; margin-right:5px; cursor:pointer;" onclick="actualizarSolicitud(${sol.id}, 'Aprobada')">Aprobar</button>
                     <button class="btn btn-danger" style="padding:0.25rem 0.6rem; font-size:0.8rem;" onclick="actualizarSolicitud(${sol.id}, 'Rechazada')">Rechazar</button>
                 `;
+            } else if (sol.estado_solicitud === 'Aprobada') {
+                actionsHtml = `<button class="btn btn-primary" style="padding:0.25rem 0.6rem; font-size:0.8rem;" onclick="generarContrato(${sol.id})">Generar Contrato</button>`;
             } else {
-                actionsHtml = `<span style="color:var(--text-muted); font-size:0.9rem;">Cerrada</span>`;
+                actionsHtml = `<span style="color:var(--text-muted); font-size:0.9rem;">Cerrada/Archivada</span>`;
             }
 
             tr.innerHTML = `
@@ -391,5 +482,165 @@ async function actualizarSolicitud(id, estado) {
         }
     } catch (err) {
         showAlert('Error de red');
+    }
+}
+// ==========================================
+// INVENTARIOS Y CONTRATOS (FASE 5)
+// ==========================================
+
+async function generarContrato(solicitud_id) {
+    const precio = prompt('Generación de Contrato\nEscribe el precio final acordado para el arrendamiento de este escenario:');
+    if(precio === null) return;
+    
+    if(isNaN(parseFloat(precio)) || parseFloat(precio) < 0) {
+        return showAlert('Por favor ingresa un precio numérico válido.');
+    }
+
+    try {
+        const res = await fetch('/api/contratos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ solicitud_id, precio_final: parseFloat(precio) })
+        });
+        if(res.ok) {
+            showAlert('Contrato formalizado correctamente', 'success');
+            actualizarSolicitud(solicitud_id, 'Contrato Generado'); // Hide generate button
+            if(typeof fetchContratos === 'function') fetchContratos();
+        } else {
+            showAlert('Error al generar el contrato');
+        }
+    } catch (err) {
+        showAlert('Error de red');
+    }
+}
+
+async function fetchContratos() {
+    try {
+        const res = await fetch('/api/contratos');
+        const data = await res.json();
+        const tbody = document.getElementById('contratosTableBody');
+        if(!tbody) return;
+
+        tbody.innerHTML = '';
+        data.contratos.forEach(c => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>CON-26-${c.id}</strong></td>
+                <td>${c.escenario_nombre}</td>
+                <td>${c.solicitante_nombre}</td>
+                <td><span style="color:var(--primary); font-weight:bold;">$${c.precio_final.toLocaleString()}</span></td>
+                <td>${new Date(c.fecha_solicitada).toLocaleDateString()}</td>
+                <td>${c.fecha_generacion}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+async function fetchInventario() {
+    try {
+        const res = await fetch('/api/inventarios');
+        const data = await res.json();
+        const tbody = document.getElementById('inventarioTableBody');
+        if(!tbody) return;
+
+        tbody.innerHTML = '';
+        data.inventarios.forEach(inv => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${inv.articulo}</strong></td>
+                <td><span class="badge" style="background:rgba(255,255,255,0.1)">${inv.categoria}</span></td>
+                <td>${inv.cantidad} Unidades</td>
+                <td>${inv.estado}</td>
+                <td>
+                    <button class="btn btn-danger" onclick="eliminarInventario(${inv.id})" style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Descartar</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+const invForm = document.getElementById('inventarioForm');
+if(invForm) {
+    invForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+            articulo: document.getElementById('invArticulo').value,
+            categoria: document.getElementById('invCategoria').value,
+            cantidad: document.getElementById('invCantidad').value,
+            estado: document.getElementById('invEstado').value
+        };
+        try {
+            const res = await fetch('/api/inventarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if(res.ok) {
+                toggleModal('inventarioModal');
+                invForm.reset();
+                fetchInventario();
+                showAlert('Artículo agregado al inventario', 'success');
+            }
+        } catch(err) {}
+    });
+}
+
+async function eliminarInventario(id) {
+    if(!confirm('¿Estás seguro de descartar/dar de baja este artículo?')) return;
+    try {
+        await fetch(`/api/inventarios/${id}`, { method: 'DELETE' });
+        fetchInventario();
+    } catch(err) {}
+}
+
+// ==========================================
+// ESTADÍSTICAS (FASE 6)
+// ==========================================
+
+async function fetchEstadisticas() {
+    try {
+        const res = await fetch('/api/estadisticas');
+        const stat = await res.json();
+        
+        // Asignar los KPIs numéricos 
+        document.getElementById('kpiIngresos').textContent = `$${stat.ingresosTotales.toLocaleString()}`;
+        document.getElementById('kpiEstudiantes').textContent = stat.estudiantesInscritos;
+        document.getElementById('kpiConvocatorias').textContent = stat.convocatoriasActivas;
+        
+        let contratosCount = 0;
+        const tbody = document.getElementById('contratosTableBody');
+        if(tbody) contratosCount = tbody.children.length;
+        document.getElementById('kpiInventario').textContent = contratosCount || '...';
+        
+        // Alertas Dinámicas (Si hay requerimientos en rojo)
+        const alertasBox = document.getElementById('systemAlerts');
+        if(!alertasBox) return;
+        
+        let alertasMarkup = '';
+        if(stat.solicitudesPendientes > 0) {
+            alertasMarkup += `<div class="glass-container" style="background: rgba(239, 68, 68, 0.2); border-left: 4px solid #ef4444; padding: 1rem; margin-bottom: 10px;">
+                                <strong style="color: #fca5a5;">¡Atención Administrador!</strong> Tienes <b>${stat.solicitudesPendientes}</b> solicitud(es) de escenario pendientes por Aprobar o Rechazar.
+                              </div>`;
+        }
+        if(stat.inventarioDanado > 0) {
+            alertasMarkup += `<div class="glass-container" style="background: rgba(245, 158, 11, 0.2); border-left: 4px solid #f59e0b; padding: 1rem;">
+                                <strong style="color: #fcd34d;">¡Aviso de Mantenimiento!</strong> Tienes <b>${stat.inventarioDanado}</b> ítem(s) de inventario marcados en estado Regular o Malo.
+                              </div>`;
+        }
+        
+        if(alertasMarkup === '') {
+            alertasBox.innerHTML = `<span style="color: #10b981;">✓ Sistema operando óptimamente. Sin notificaciones pendientes.</span>`;
+        } else {
+            alertasBox.innerHTML = alertasMarkup;
+        }
+
+    } catch(err) {
+        console.error('Error fetching estadisticas');
     }
 }
